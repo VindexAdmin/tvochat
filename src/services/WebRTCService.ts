@@ -20,8 +20,8 @@ export class WebRTCService {
   private isSearching = false;
   private partnerId: string | null = null;
 
-  // Tu servidor de Render
-  private readonly SIGNALING_SERVER = 'https://tvo-x2ie.onrender.com';
+  // Use environment variable for signaling server URL
+  private readonly SIGNALING_SERVER = import.meta.env.VITE_SIGNALING_SERVER || 'https://tvo-x2ie.onrender.com';
   
   constructor(events: WebRTCEvents) {
     this.events = events;
