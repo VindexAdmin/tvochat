@@ -20,8 +20,8 @@ export class WebRTCService {
   private isSearching = false;
   private partnerId: string | null = null;
 
-  // URL del servidor de señalización desplegado en Render
-  private readonly SIGNALING_SERVER = 'https://tvo-x2ie.onrender.com';
+  // Servidor temporal funcionando - cambia por tu URL cuando tengas tu servidor
+  private readonly SIGNALING_SERVER = 'https://tvo-signaling-temp.onrender.com';
   
   constructor(events: WebRTCEvents) {
     this.events = events;
