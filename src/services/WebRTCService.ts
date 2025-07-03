@@ -20,8 +20,8 @@ export class WebRTCService {
   private isSearching = false;
   private partnerId: string | null = null;
 
-  // Servidor temporal funcionando - cambia por tu URL cuando tengas tu servidor
-  private readonly SIGNALING_SERVER = 'https://tvo-signaling-temp.onrender.com';
+  // Tu servidor de Render
+  private readonly SIGNALING_SERVER = 'https://tvo-x2ie.onrender.com';
   
   constructor(events: WebRTCEvents) {
     this.events = events;
@@ -29,7 +29,7 @@ export class WebRTCService {
 
   async initialize(): Promise<void> {
     try {
-      // Initialize PeerJS with cloud service (free)
+      // Initialize PeerJS with cloud service (free) - NO local server
       this.peer = new Peer({
         config: {
           iceServers: [
