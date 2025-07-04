@@ -141,20 +141,6 @@ function App() {
         </div>
       </div>
 
-      {/* AdSense Ad Section - Mobile optimized */}
-      <div className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 border-b border-white/5 px-4 py-2">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-center">
-            <div className="bg-white/5 border border-white/10 rounded-lg p-3 backdrop-blur-sm w-full max-w-sm">
-              <div className="text-center text-gray-400 text-xs mb-2">Advertisement</div>
-              <div className="w-full h-16 bg-gradient-to-r from-gray-700/30 to-gray-600/30 rounded border border-white/10 flex items-center justify-center">
-                <span className="text-gray-500 text-xs">AdSense Ad Space</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Error Banner */}
       {error && (
         <div className="bg-red-500/20 border-b border-red-500/30 px-4 py-2">
@@ -167,7 +153,7 @@ function App() {
 
       <main className="flex-1 p-4 max-w-7xl mx-auto">
         {/* Mobile Layout - Vertical Stack */}
-        <div className="block lg:hidden space-y-4 h-[calc(100vh-240px)]">
+        <div className="block lg:hidden space-y-4 h-[calc(100vh-160px)]">
           {/* Remote Video - Full width on mobile */}
           <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden border border-white/10 h-64">
             {isConnected ? (
@@ -359,7 +345,7 @@ function App() {
         </div>
 
         {/* Desktop Layout - Original grid layout */}
-        <div className={`hidden lg:grid ${showChat ? 'grid-cols-4' : 'grid-cols-1'} gap-6 h-[calc(100vh-240px)]`}>
+        <div className={`hidden lg:grid ${showChat ? 'grid-cols-4' : 'grid-cols-1'} gap-6 h-[calc(100vh-160px)]`}>
           {/* Video Section */}
           <div className={`${showChat ? 'col-span-3' : 'col-span-1'} space-y-6`}>
             {/* Video Grid - Symmetric Layout */}
