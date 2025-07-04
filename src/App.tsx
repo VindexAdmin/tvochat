@@ -116,6 +116,20 @@ function App() {
         </div>
       </header>
 
+      {/* AdSense Ad Section */}
+      <div className="bg-gradient-to-r from-gray-900/50 to-gray-800/50 border-b border-white/5 px-6 py-3">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-center">
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4 backdrop-blur-sm">
+              <div className="text-center text-gray-400 text-sm mb-2">Advertisement</div>
+              <div className="w-full h-20 bg-gradient-to-r from-gray-700/30 to-gray-600/30 rounded border border-white/10 flex items-center justify-center">
+                <span className="text-gray-500 text-sm">AdSense Ad Space</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Error Banner */}
       {error && (
         <div className="bg-red-500/20 border-b border-red-500/30 px-6 py-3">
@@ -127,7 +141,7 @@ function App() {
       )}
 
       <main className="flex-1 p-6 max-w-7xl mx-auto">
-        <div className={`grid ${showChat ? 'grid-cols-1 lg:grid-cols-4' : 'grid-cols-1'} gap-6 h-[calc(100vh-120px)]`}>
+        <div className={`grid ${showChat ? 'grid-cols-1 lg:grid-cols-4' : 'grid-cols-1'} gap-6 h-[calc(100vh-200px)]`}>
           {/* Video Section */}
           <div className={`${showChat ? 'lg:col-span-3' : 'col-span-1'} space-y-6`}>
             {/* Video Grid - Symmetric Layout */}
