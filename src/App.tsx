@@ -14,6 +14,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useWebRTC } from './hooks/useWebRTC';
+import { ParentalAdvisoryModal } from './components/ParentalAdvisoryModal';
 
 function App() {
   const [isCameraOn, setIsCameraOn] = useState(true);
@@ -21,6 +22,7 @@ function App() {
   const [showChat, setShowChat] = useState(false);
   const [messageInput, setMessageInput] = useState('');
   const [onlineUsers] = useState(Math.floor(Math.random() * 10000) + 5000);
+  const [showParentalModal, setShowParentalModal] = useState(false);
   
   const {
     isConnected,
@@ -57,12 +59,28 @@ function App() {
   };
 
   const handleStartChat = () => {
+    setShowParentalModal(true);
+  };
+
+  const handleAcceptTerms = () => {
+    setShowParentalModal(false);
     setShowChat(true);
     startSearch();
   };
 
+  const handleDeclineTerms = () => {
+    setShowParentalModal(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+      {/* Parental Advisory Modal */}
+      <ParentalAdvisoryModal
+        isOpen={showParentalModal}
+        onAccept={handleAcceptTerms}
+        onDecline={handleDeclineTerms}
+      />
+
       {/* Header - Compact for mobile */}
       <header className="backdrop-blur-md bg-black/20 border-b border-white/10 px-4 py-3">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
