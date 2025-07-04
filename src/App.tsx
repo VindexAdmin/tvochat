@@ -227,7 +227,7 @@ function App() {
               <div className="text-center space-y-3 w-full">
                 <button
                   onClick={handleStartChat}
-                  className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg"
+                  className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg text-white"
                 >
                   Start Video Chat
                 </button>
@@ -239,10 +239,10 @@ function App() {
               <div className="flex items-center justify-center space-x-3 w-full">
                 <button
                   onClick={handleToggleCamera}
-                  className={`p-3 rounded-xl border transition-all ${
+                  className={`p-3 rounded-xl border transition-all text-white ${
                     isCameraOn 
-                      ? 'bg-white/10 border-white/20 hover:bg-white/20' 
-                      : 'bg-red-500/20 border-red-500/50 hover:bg-red-500/30'
+                      ? 'bg-gray-700/80 border-gray-600/50 hover:bg-gray-600/80' 
+                      : 'bg-red-600/80 border-red-500/50 hover:bg-red-500/80'
                   }`}
                 >
                   {isCameraOn ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
@@ -250,10 +250,10 @@ function App() {
 
                 <button
                   onClick={handleToggleMic}
-                  className={`p-3 rounded-xl border transition-all ${
+                  className={`p-3 rounded-xl border transition-all text-white ${
                     isMicOn 
-                      ? 'bg-white/10 border-white/20 hover:bg-white/20' 
-                      : 'bg-red-500/20 border-red-500/50 hover:bg-red-500/30'
+                      ? 'bg-gray-700/80 border-gray-600/50 hover:bg-gray-600/80' 
+                      : 'bg-red-600/80 border-red-500/50 hover:bg-red-500/80'
                   }`}
                 >
                   {isMicOn ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
@@ -261,7 +261,7 @@ function App() {
 
                 <button
                   onClick={() => setShowChat(!showChat)}
-                  className="p-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all"
+                  className="p-3 rounded-xl bg-blue-600/80 border border-blue-500/50 hover:bg-blue-500/80 transition-all text-white"
                 >
                   <MessageCircle className="w-5 h-5" />
                 </button>
@@ -269,7 +269,7 @@ function App() {
                 {isConnected && (
                   <button
                     onClick={nextUser}
-                    className="p-3 rounded-xl bg-blue-500/20 border border-blue-500/50 hover:bg-blue-500/30 transition-all"
+                    className="p-3 rounded-xl bg-purple-600/80 border border-purple-500/50 hover:bg-purple-500/80 transition-all text-white"
                   >
                     <SkipForward className="w-5 h-5" />
                   </button>
@@ -277,7 +277,7 @@ function App() {
 
                 <button
                   onClick={disconnect}
-                  className="p-3 rounded-xl bg-red-500/20 border border-red-500/50 hover:bg-red-500/30 transition-all"
+                  className="p-3 rounded-xl bg-red-600/80 border border-red-500/50 hover:bg-red-500/80 transition-all text-white"
                 >
                   <Power className="w-5 h-5" />
                 </button>
@@ -424,7 +424,7 @@ function App() {
                 <div className="text-center space-y-4">
                   <button
                     onClick={handleStartChat}
-                    className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg text-lg"
+                    className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg text-lg text-white"
                   >
                     Start Video Chat
                   </button>
@@ -436,10 +436,10 @@ function App() {
                 <div className="flex items-center space-x-6">
                   <button
                     onClick={handleToggleCamera}
-                    className={`p-4 rounded-2xl border transition-all ${
+                    className={`p-4 rounded-2xl border transition-all text-white ${
                       isCameraOn 
-                        ? 'bg-white/10 border-white/20 hover:bg-white/20' 
-                        : 'bg-red-500/20 border-red-500/50 hover:bg-red-500/30'
+                        ? 'bg-gray-700/80 border-gray-600/50 hover:bg-gray-600/80' 
+                        : 'bg-red-600/80 border-red-500/50 hover:bg-red-500/80'
                     }`}
                     title={isCameraOn ? 'Turn off camera' : 'Turn on camera'}
                   >
@@ -448,10 +448,10 @@ function App() {
 
                   <button
                     onClick={handleToggleMic}
-                    className={`p-4 rounded-2xl border transition-all ${
+                    className={`p-4 rounded-2xl border transition-all text-white ${
                       isMicOn 
-                        ? 'bg-white/10 border-white/20 hover:bg-white/20' 
-                        : 'bg-red-500/20 border-red-500/50 hover:bg-red-500/30'
+                        ? 'bg-gray-700/80 border-gray-600/50 hover:bg-gray-600/80' 
+                        : 'bg-red-600/80 border-red-500/50 hover:bg-red-500/80'
                     }`}
                     title={isMicOn ? 'Mute microphone' : 'Unmute microphone'}
                   >
@@ -460,7 +460,7 @@ function App() {
 
                   <button
                     onClick={() => setShowChat(!showChat)}
-                    className="p-4 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all lg:hidden"
+                    className="p-4 rounded-2xl bg-blue-600/80 border border-blue-500/50 hover:bg-blue-500/80 transition-all lg:hidden text-white"
                     title="Toggle chat"
                   >
                     <MessageCircle className="w-6 h-6" />
@@ -469,7 +469,7 @@ function App() {
                   {isConnected && (
                     <button
                       onClick={nextUser}
-                      className="p-4 rounded-2xl bg-blue-500/20 border border-blue-500/50 hover:bg-blue-500/30 transition-all"
+                      className="p-4 rounded-2xl bg-purple-600/80 border border-purple-500/50 hover:bg-purple-500/80 transition-all text-white"
                       title="Next user"
                     >
                       <SkipForward className="w-6 h-6" />
@@ -478,7 +478,7 @@ function App() {
 
                   <button
                     onClick={disconnect}
-                    className="p-4 rounded-2xl bg-red-500/20 border border-red-500/50 hover:bg-red-500/30 transition-all"
+                    className="p-4 rounded-2xl bg-red-600/80 border border-red-500/50 hover:bg-red-500/80 transition-all text-white"
                     title="Disconnect"
                   >
                     <Power className="w-6 h-6" />
