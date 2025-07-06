@@ -16,7 +16,7 @@ export class ChessGameService {
   private playerColor: 'white' | 'black' | null = null;
   private gameId: string | null = null;
 
-  private readonly SIGNALING_SERVER = import.meta.env.VITE_SIGNALING_SERVER || 'https://tvo-x2ie.onrender.com';
+  private readonly SIGNALING_SERVER = 'http://localhost:3001';
 
   constructor(events: ChessGameEvents) {
     this.events = events;
