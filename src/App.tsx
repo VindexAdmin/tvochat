@@ -10,16 +10,19 @@ import {
   Users,
   Wifi,
   WifiOff,
-  AlertCircle
+  AlertCircle,
+  Power
 } from 'lucide-react';
 import { useWebRTC } from './hooks/useWebRTC';
+import { ParentalAdvisoryModal } from './components/ParentalAdvisoryModal';
 
 function App() {
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [isMicOn, setIsMicOn] = useState(true);
   const [showChat, setShowChat] = useState(false);
   const [messageInput, setMessageInput] = useState('');
-  const [onlineUsers] = useState(Math.floor(Math.random() * 5000) + 2000);
+  const [onlineUsers] = useState(Math.floor(Math.random() * 50000) + 25000);
+  const [showParentalModal, setShowParentalModal] = useState(false);
   
   const {
     isConnected,
@@ -56,36 +59,39 @@ function App() {
   };
 
   const handleStart = () => {
+    setShowParentalModal(true);
+  };
+
+  const handleAcceptTerms = () => {
+    setShowParentalModal(false);
     startSearch();
   };
 
+  const handleDeclineTerms = () => {
+    setShowParentalModal(false);
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
-      {/* Header */}
-      <header className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-800 px-4 py-3">
+    <div className="min-h-screen bg-white text-black">
+      {/* Parental Advisory Modal */}
+      <ParentalAdvisoryModal
+        isOpen={showParentalModal}
+        onAccept={handleAcceptTerms}
+        onDecline={handleDeclineTerms}
+      />
+
+      {/* Header - Omegle Style */}
+      <header className="bg-blue-600 text-white px-4 py-3 shadow-md">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <Video className="w-5 h-5" />
-            </div>
-            <h1 className="text-xl font-bold">TVO</h1>
+            <h1 className="text-2xl font-bold">Omegle</h1>
+            <span className="text-blue-200 text-sm">Talk to strangers!</span>
           </div>
           
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 text-green-400">
+            <div className="flex items-center space-x-2 text-blue-200">
               <Users className="w-4 h-4" />
-              <span className="text-sm">{onlineUsers.toLocaleString()}</span>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              {isConnected ? (
-                <Wifi className="w-4 h-4 text-green-400" />
-              ) : (
-                <WifiOff className="w-4 h-4 text-gray-400" />
-              )}
-              <span className="text-sm">
-                {isConnected ? 'Connected' : isSearching ? 'Searching...' : 'Offline'}
-              </span>
+              <span className="text-sm">{onlineUsers.toLocaleString()} online now</span>
             </div>
           </div>
         </div>
@@ -93,196 +99,204 @@ function App() {
 
       {/* Error Banner */}
       {error && (
-        <div className="bg-red-500/20 border-b border-red-500/30 px-4 py-2">
+        <div className="bg-red-100 border-b border-red-300 px-4 py-2">
           <div className="flex items-center space-x-2 max-w-6xl mx-auto">
-            <AlertCircle className="w-4 h-4 text-red-400" />
-            <span className="text-red-200 text-sm">{error}</span>
+            <AlertCircle className="w-4 h-4 text-red-600" />
+            <span className="text-red-700 text-sm">{error}</span>
           </div>
         </div>
       )}
 
-      {/* Main Content */}
-      <main className="flex-1 flex">
-        {/* Video Section */}
-        <div className="flex-1 flex flex-col">
-          {/* Main Video Area */}
-          <div className="flex-1 relative bg-gray-900">
-            {isConnected ? (
-              <video
-                ref={remoteVideoRef}
-                className="w-full h-full object-cover"
-                autoPlay
-                playsInline
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center space-y-4">
-                  {isSearching ? (
-                    <>
-                      <div className="w-16 h-16 mx-auto border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
-                      <p className="text-xl font-medium">Looking for someone...</p>
-                      <p className="text-gray-400">Please wait while we connect you</p>
-                    </>
-                  ) : (
-                    <>
-                      <Video className="w-24 h-24 mx-auto text-gray-600" />
-                      <p className="text-2xl font-medium">Welcome to TVO</p>
-                      <p className="text-gray-400">Click start to begin video chatting with strangers</p>
-                      <button
-                        onClick={handleStart}
-                        className="px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
-                      >
-                        Start
-                      </button>
-                    </>
-                  )}
+      {/* Main Content - Omegle Layout */}
+      <main className="flex-1">
+        <div className="max-w-6xl mx-auto p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[calc(100vh-200px)]">
+            
+            {/* Video Section */}
+            <div className="space-y-4">
+              {/* Stranger's Video */}
+              <div className="bg-black rounded-lg overflow-hidden shadow-lg h-64 lg:h-80 relative">
+                {isConnected ? (
+                  <video
+                    ref={remoteVideoRef}
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    playsInline
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-900">
+                    <div className="text-center space-y-4 text-white">
+                      {isSearching ? (
+                        <>
+                          <div className="w-12 h-12 mx-auto border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+                          <p className="text-lg">Looking for someone you can chat with. Hang on.</p>
+                        </>
+                      ) : (
+                        <>
+                          <Video className="w-16 h-16 mx-auto text-gray-500" />
+                          <p className="text-lg">Stranger</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+                <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm">
+                  Stranger
                 </div>
               </div>
-            )}
 
-            {/* Local Video (Picture in Picture) */}
-            <div className="absolute top-4 right-4 w-48 h-36 bg-gray-800 rounded-lg overflow-hidden border-2 border-gray-700">
-              <video
-                ref={localVideoRef}
-                className="w-full h-full object-cover"
-                autoPlay
-                playsInline
-                muted
-              />
-              {!isCameraOn && (
-                <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-                  <VideoOff className="w-8 h-8 text-gray-500" />
+              {/* Your Video */}
+              <div className="bg-black rounded-lg overflow-hidden shadow-lg h-64 lg:h-80 relative">
+                <video
+                  ref={localVideoRef}
+                  className="w-full h-full object-cover"
+                  autoPlay
+                  playsInline
+                  muted
+                />
+                {!isCameraOn && (
+                  <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+                    <VideoOff className="w-16 h-16 text-gray-500" />
+                  </div>
+                )}
+                <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm">
+                  You
                 </div>
-              )}
-              <div className="absolute bottom-1 left-1 bg-black/50 backdrop-blur-sm rounded px-2 py-1 text-xs">
-                You
+              </div>
+            </div>
+
+            {/* Chat Section */}
+            <div className="bg-white border border-gray-300 rounded-lg shadow-lg flex flex-col h-64 lg:h-[calc(100%-2rem)]">
+              <div className="bg-gray-100 border-b border-gray-300 p-3 rounded-t-lg">
+                <h3 className="font-semibold text-gray-800">Chat</h3>
+              </div>
+
+              {/* Messages */}
+              <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-white">
+                {messages.length === 0 ? (
+                  <div className="text-center text-gray-500 py-8">
+                    {isConnected ? (
+                      <p>You're now chatting with a random stranger. Say hi!</p>
+                    ) : isSearching ? (
+                      <p>Looking for someone you can chat with. Hang on.</p>
+                    ) : (
+                      <p>You're not connected to anyone. Click "Start" to begin!</p>
+                    )}
+                  </div>
+                ) : (
+                  messages.map((message) => (
+                    <div key={message.id} className="text-sm">
+                      <span className={`font-semibold ${
+                        message.sender === 'you' ? 'text-blue-600' : 'text-red-600'
+                      }`}>
+                        {message.sender === 'you' ? 'You' : 'Stranger'}:
+                      </span>
+                      <span className="ml-2 text-gray-800">{message.text}</span>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Message Input */}
+              <div className="border-t border-gray-300 p-3 bg-gray-50 rounded-b-lg">
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    placeholder={isConnected ? "Type your message here..." : "Connect to start chatting"}
+                    disabled={!isConnected}
+                    className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+                  />
+                  <button
+                    onClick={handleSendMessage}
+                    disabled={!isConnected || !messageInput.trim()}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded text-sm transition-colors"
+                  >
+                    Send
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Controls */}
-          <div className="bg-gray-900/80 backdrop-blur-sm border-t border-gray-800 p-4">
-            <div className="flex items-center justify-center space-x-4">
+          {/* Controls - Omegle Style */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+            {!isConnected && !isSearching ? (
               <button
-                onClick={handleToggleCamera}
-                className={`p-3 rounded-full transition-all ${
-                  isCameraOn 
-                    ? 'bg-gray-700 hover:bg-gray-600' 
-                    : 'bg-red-600 hover:bg-red-700'
-                }`}
+                onClick={handleStart}
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-lg transition-colors shadow-md"
               >
-                {isCameraOn ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
+                Start chatting
               </button>
-
-              <button
-                onClick={handleToggleMic}
-                className={`p-3 rounded-full transition-all ${
-                  isMicOn 
-                    ? 'bg-gray-700 hover:bg-gray-600' 
-                    : 'bg-red-600 hover:bg-red-700'
-                }`}
-              >
-                {isMicOn ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
-              </button>
-
-              <button
-                onClick={() => setShowChat(!showChat)}
-                className="p-3 rounded-full bg-blue-600 hover:bg-blue-700 transition-all"
-              >
-                <MessageCircle className="w-5 h-5" />
-              </button>
-
-              {isConnected && (
+            ) : (
+              <>
                 <button
-                  onClick={nextUser}
-                  className="p-3 rounded-full bg-purple-600 hover:bg-purple-700 transition-all"
+                  onClick={handleToggleCamera}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors shadow-md ${
+                    isCameraOn 
+                      ? 'bg-gray-600 hover:bg-gray-700 text-white' 
+                      : 'bg-red-600 hover:bg-red-700 text-white'
+                  }`}
                 >
-                  <SkipForward className="w-5 h-5" />
+                  {isCameraOn ? 'Turn off camera' : 'Turn on camera'}
                 </button>
-              )}
 
-              <button
-                onClick={disconnect}
-                className="p-3 rounded-full bg-gray-700 hover:bg-gray-600 transition-all"
-              >
-                Stop
-              </button>
-            </div>
+                <button
+                  onClick={handleToggleMic}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors shadow-md ${
+                    isMicOn 
+                      ? 'bg-gray-600 hover:bg-gray-700 text-white' 
+                      : 'bg-red-600 hover:bg-red-700 text-white'
+                  }`}
+                >
+                  {isMicOn ? 'Mute' : 'Unmute'}
+                </button>
+
+                {isConnected && (
+                  <button
+                    onClick={nextUser}
+                    className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors shadow-md"
+                  >
+                    New
+                  </button>
+                )}
+
+                <button
+                  onClick={disconnect}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors shadow-md"
+                >
+                  Stop
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Omegle-style disclaimer */}
+          <div className="mt-6 text-center text-gray-600 text-sm max-w-4xl mx-auto">
+            <p className="mb-2">
+              <strong>Omegle</strong> lets you chat with strangers instantly. When you use Omegle, we pick someone else at random and let you talk one-on-one.
+            </p>
+            <p className="mb-2">
+              To help you stay safe, chats are anonymous unless you tell someone who you are (not suggested!), and you can stop a chat at any time.
+            </p>
+            <p className="text-xs text-gray-500">
+              Predators have been known to use Omegle, so please be careful. You must be 18+ or 13+ with parental permission.
+            </p>
           </div>
         </div>
-
-        {/* Chat Sidebar */}
-        {showChat && (
-          <div className="w-80 bg-gray-900 border-l border-gray-800 flex flex-col">
-            <div className="bg-gray-800 p-4 border-b border-gray-700">
-              <h3 className="font-semibold">Chat</h3>
-            </div>
-
-            {/* Messages */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3">
-              {messages.length === 0 ? (
-                <div className="text-center text-gray-500 py-8">
-                  <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>No messages yet</p>
-                  <p className="text-sm">Start chatting when connected!</p>
-                </div>
-              ) : (
-                messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`max-w-[80%] ${
-                      message.sender === 'you' ? 'ml-auto' : 'mr-auto'
-                    }`}
-                  >
-                    <div
-                      className={`p-3 rounded-lg ${
-                        message.sender === 'you'
-                          ? 'bg-blue-600 text-white ml-auto'
-                          : 'bg-gray-700 text-gray-100'
-                      }`}
-                    >
-                      <p className="text-sm">{message.text}</p>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1 px-1">
-                      {message.timestamp.toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
-                    </p>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Message Input */}
-            <div className="p-4 border-t border-gray-700">
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder={isConnected ? "Type a message..." : "Connect to chat"}
-                  disabled={!isConnected}
-                  className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-                />
-                <button
-                  onClick={handleSendMessage}
-                  disabled={!isConnected || !messageInput.trim()}
-                  className="p-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg transition-all"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900/50 backdrop-blur-sm border-t border-gray-800 px-4 py-3">
-        <div className="text-center text-gray-400 text-sm max-w-6xl mx-auto">
-          <p>Connect with strangers around the world • Be respectful and have fun!</p>
+      <footer className="bg-gray-100 border-t border-gray-300 px-4 py-6 mt-8">
+        <div className="text-center text-gray-600 text-sm max-w-6xl mx-auto">
+          <p className="mb-2">© 2024 Omegle.com LLC. All rights reserved.</p>
+          <div className="flex justify-center space-x-4 text-xs">
+            <a href="#" className="text-blue-600 hover:underline">Terms of Service</a>
+            <a href="#" className="text-blue-600 hover:underline">Privacy Policy</a>
+            <a href="#" className="text-blue-600 hover:underline">Community Guidelines</a>
+          </div>
         </div>
       </footer>
     </div>
