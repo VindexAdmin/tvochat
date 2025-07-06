@@ -1,5 +1,5 @@
 {
-  "name": "modern-web-app",
+  "name": "chess-with-strangers",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,9 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "chess.js": "^1.4.0",
     "lucide-react": "^0.344.0",
+    "peerjs": "^1.5.2",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "socket.io-client": "^4.7.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
