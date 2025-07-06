@@ -10,7 +10,6 @@ const server = http.createServer(app);
 app.use(cors({
   origin: [
     "http://localhost:5173", 
-    "*",
     "https://tvo-video-chat.netlify.app",
     "https://tvo-video-chat.vercel.app",
     "https://vindexadmin.github.io",
@@ -29,7 +28,6 @@ const io = socketIo(server, {
     origin: [
       "http://localhost:5173", 
       "https://tvo-video-chat.netlify.app",
-      "*",
       "https://tvo-video-chat.vercel.app",
       "https://vindexadmin.github.io",
       "https://tvo.netlify.app",
