@@ -6,18 +6,24 @@ const cors = require('cors');
 const app = express();
 const server = http.createServer(app);
 
+// Determine if we're in development
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+// CORS origins - allow all in development, specific origins in production
+const allowedOrigins = isDevelopment ? "*" : [
+  "http://localhost:5173", 
+  "https://tvo-video-chat.netlify.app",
+  "https://tvo-video-chat.vercel.app",
+  "https://vindexadmin.github.io",
+  "https://tvo.netlify.app",
+  "https://tvo.vercel.app"
+];
+
 // Configurar CORS para producción
 app.use(cors({
-  origin: [
-    "http://localhost:5173", 
-    "https://tvo-video-chat.netlify.app",
-    "https://tvo-video-chat.vercel.app",
-    "https://vindexadmin.github.io",
-    "https://tvo.netlify.app",
-    "https://tvo.vercel.app"
-  ],
+  origin: allowedOrigins,
   methods: ["GET", "POST"],
-  credentials: true
+  credentials: !isDevelopment // Only use credentials in production
 }));
 
 // Middleware para parsear JSON
@@ -25,16 +31,9 @@ app.use(express.json());
 
 const io = socketIo(server, {
   cors: {
-    origin: [
-      "http://localhost:5173", 
-      "https://tvo-video-chat.netlify.app",
-      "https://tvo-video-chat.vercel.app",
-      "https://vindexadmin.github.io",
-      "https://tvo.netlify.app",
-      "https://tvo.vercel.app"
-    ],
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
-    credentials: true
+    credentials: !isDevelopment // Only use credentials in production
   }
 });
 
