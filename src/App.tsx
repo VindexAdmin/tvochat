@@ -1,739 +1,359 @@
 import React, { useState } from 'react';
 import { 
-  Video, 
-  VideoOff, 
-  Mic, 
-  MicOff, 
-  MessageCircle, 
-  Power,
-  Send,
-  Users,
-  Wifi,
-  WifiOff,
-  AlertCircle,
-  Crown,
-  Flag,
-  Handshake,
-  RotateCcw
+  Sparkles, 
+  Zap, 
+  Heart, 
+  Star, 
+  Rocket,
+  Moon,
+  Sun,
+  Menu,
+  X,
+  ArrowRight,
+  Check,
+  Globe,
+  Shield,
+  Smartphone
 } from 'lucide-react';
-import { useWebRTC } from './hooks/useWebRTC';
-import { useChessGame } from './hooks/useChessGame';
-import { ParentalAdvisoryModal } from './components/ParentalAdvisoryModal';
-import { ChessBoard } from './components/ChessBoard';
-import { GameStatus } from './components/GameStatus';
 
 function App() {
-  const [isCameraOn, setIsCameraOn] = useState(true);
-  const [isMicOn, setIsMicOn] = useState(true);
-  const [showChat, setShowChat] = useState(false);
-  const [messageInput, setMessageInput] = useState('');
-  const [onlineUsers] = useState(Math.floor(Math.random() * 5000) + 2000);
-  const [showParentalModal, setShowParentalModal] = useState(false);
-  
-  const {
-    isConnected: isVideoConnected,
-    isSearching: isVideoSearching,
-    messages,
-    error: videoError,
-    localVideoRef,
-    remoteVideoRef,
-    startSearch: startVideoSearch,
-    sendMessage,
-    nextUser,
-    disconnect: disconnectVideo,
-    toggleCamera,
-    toggleMicrophone
-  } = useWebRTC();
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const {
-    game,
-    playerColor,
-    isSearching: isChessSearching,
-    isGameActive,
-    gameResult,
-    error: chessError,
-    lastMove,
-    findGame,
-    makeMove,
-    resign,
-    offerDraw,
-    isPlayerTurn
-  } = useChessGame();
-
-  const error = videoError || chessError;
-  const isSearching = isVideoSearching || isChessSearching;
-
-  const handleToggleCamera = () => {
-    const newState = !isCameraOn;
-    setIsCameraOn(newState);
-    toggleCamera(newState);
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
   };
 
-  const handleToggleMic = () => {
-    const newState = !isMicOn;
-    setIsMicOn(newState);
-    toggleMicrophone(newState);
-  };
-
-  const handleSendMessage = () => {
-    if (messageInput.trim() && isVideoConnected) {
-      sendMessage(messageInput.trim());
-      setMessageInput('');
+  const features = [
+    {
+      icon: <Zap className="w-6 h-6" />,
+      title: "Lightning Fast",
+      description: "Built with modern technologies for optimal performance"
+    },
+    {
+      icon: <Shield className="w-6 h-6" />,
+      title: "Secure & Reliable",
+      description: "Enterprise-grade security with 99.9% uptime guarantee"
+    },
+    {
+      icon: <Smartphone className="w-6 h-6" />,
+      title: "Mobile First",
+      description: "Responsive design that works perfectly on all devices"
+    },
+    {
+      icon: <Globe className="w-6 h-6" />,
+      title: "Global Scale",
+      description: "Deployed worldwide with CDN for fastest access"
     }
-  };
+  ];
 
-  const handleStartGame = () => {
-    setShowParentalModal(true);
-  };
-
-  const handleAcceptTerms = () => {
-    setShowParentalModal(false);
-    setShowChat(true);
-    startVideoSearch();
-    findGame();
-  };
-
-  const handleDeclineTerms = () => {
-    setShowParentalModal(false);
-  };
-
-  const handleNewGame = () => {
-    disconnectVideo();
-    findGame();
-    startVideoSearch();
-  };
+  const stats = [
+    { number: "10K+", label: "Happy Users" },
+    { number: "99.9%", label: "Uptime" },
+    { number: "24/7", label: "Support" },
+    { number: "50+", label: "Countries" }
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
-      {/* Parental Advisory Modal */}
-      <ParentalAdvisoryModal
-        isOpen={showParentalModal}
-        onAccept={handleAcceptTerms}
-        onDecline={handleDeclineTerms}
-      />
-
-      {/* Header */}
-      <header className="backdrop-blur-md bg-black/20 border-b border-white/10 px-4 py-3">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
-              <Crown className="w-5 h-5" />
-            </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
-              Chess With Strangers
-            </h1>
-          </div>
-          
-          {/* Center - Status */}
-          <div className="hidden sm:flex flex-1 justify-center">
-            {(isVideoConnected || isGameActive || isSearching) && (
-              <div className="flex items-center space-x-2 px-3 py-1 bg-white/10 rounded-lg backdrop-blur-sm">
-                {isSearching ? (
-                  <>
-                    <div className="w-3 h-3 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin"></div>
-                    <span className="text-xs font-medium">Finding opponent...</span>
-                  </>
-                ) : isGameActive ? (
-                  <>
-                    <Crown className="w-3 h-3 text-amber-400" />
-                    <span className="text-xs font-medium">Playing Chess</span>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-xs font-medium">Video Connected</span>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-          
-          {/* Right Side Info */}
-          <div className="flex items-center space-x-3">
-            <div className="hidden sm:flex items-center space-x-2 text-green-400">
-              <Users className="w-3 h-3" />
-              <span className="text-xs font-medium">{onlineUsers.toLocaleString()}</span>
-            </div>
-            
-            <div className="flex items-center space-x-1">
-              {isVideoConnected ? (
-                <Wifi className="w-4 h-4 text-green-400" />
-              ) : (
-                <WifiOff className="w-4 h-4 text-gray-400" />
-              )}
-              <span className="text-xs hidden sm:inline">
-                {isVideoConnected ? 'Connected' : isSearching ? 'Searching...' : 'Offline'}
-              </span>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Mobile Status Bar */}
-      <div className="sm:hidden bg-gradient-to-r from-gray-900/50 to-gray-800/50 border-b border-white/5 px-4 py-2">
-        <div className="flex items-center justify-between text-xs">
-          <div className="flex items-center space-x-2 text-green-400">
-            <Users className="w-3 h-3" />
-            <span>{onlineUsers.toLocaleString()} online</span>
-          </div>
-          {(isVideoConnected || isGameActive || isSearching) && (
+    <div className={`min-h-screen transition-all duration-500 ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 text-white' 
+        : 'bg-gradient-to-br from-blue-50 via-white to-purple-50 text-gray-900'
+    }`}>
+      {/* Navigation */}
+      <nav className={`backdrop-blur-md border-b transition-all duration-300 ${
+        isDarkMode 
+          ? 'bg-black/20 border-white/10' 
+          : 'bg-white/70 border-gray-200/50'
+      }`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
             <div className="flex items-center space-x-2">
-              {isSearching ? (
-                <>
-                  <div className="w-3 h-3 border-2 border-amber-500/30 border-t-amber-500 rounded-full animate-spin"></div>
-                  <span>Finding opponent...</span>
-                </>
-              ) : isGameActive ? (
-                <>
-                  <Crown className="w-3 h-3 text-amber-400" />
-                  <span>Playing</span>
-                </>
-              ) : (
-                <>
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span>Connected</span>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Error Banner */}
-      {error && (
-        <div className="bg-red-500/20 border-b border-red-500/30 px-4 py-2">
-          <div className="flex items-center space-x-2 max-w-7xl mx-auto">
-            <AlertCircle className="w-4 h-4 text-red-400" />
-            <span className="text-red-200 text-sm">{error}</span>
-          </div>
-        </div>
-      )}
-
-      {/* Game Result Banner */}
-      {gameResult && (
-        <div className={`border-b px-4 py-2 ${
-          gameResult.result === 'win' ? 'bg-green-500/20 border-green-500/30' :
-          gameResult.result === 'loss' ? 'bg-red-500/20 border-red-500/30' :
-          'bg-yellow-500/20 border-yellow-500/30'
-        }`}>
-          <div className="flex items-center justify-between max-w-7xl mx-auto">
-            <div className="flex items-center space-x-2">
-              <Crown className={`w-4 h-4 ${
-                gameResult.result === 'win' ? 'text-green-400' :
-                gameResult.result === 'loss' ? 'text-red-400' :
-                'text-yellow-400'
-              }`} />
-              <span className={`text-sm font-medium ${
-                gameResult.result === 'win' ? 'text-green-200' :
-                gameResult.result === 'loss' ? 'text-red-200' :
-                'text-yellow-200'
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                isDarkMode 
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500' 
+                  : 'bg-gradient-to-r from-blue-500 to-purple-500'
               }`}>
-                {gameResult.result === 'win' ? 'You Won!' :
-                 gameResult.result === 'loss' ? 'You Lost' :
-                 'Draw'} - {gameResult.reason}
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                ModernApp
               </span>
             </div>
-            <button
-              onClick={handleNewGame}
-              className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-xs transition-colors"
-            >
-              New Game
-            </button>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#features" className={`hover:text-purple-400 transition-colors ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`}>
+                Features
+              </a>
+              <a href="#about" className={`hover:text-purple-400 transition-colors ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`}>
+                About
+              </a>
+              <a href="#contact" className={`hover:text-purple-400 transition-colors ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`}>
+                Contact
+              </a>
+              
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className={`p-2 rounded-xl transition-all hover:scale-110 ${
+                  isDarkMode 
+                    ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30' 
+                    : 'bg-purple-500/20 text-purple-600 hover:bg-purple-500/30'
+                }`}
+              >
+                {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden flex items-center space-x-2">
+              <button
+                onClick={toggleTheme}
+                className={`p-2 rounded-xl transition-all ${
+                  isDarkMode 
+                    ? 'bg-yellow-500/20 text-yellow-400' 
+                    : 'bg-purple-500/20 text-purple-600'
+                }`}
+              >
+                {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </button>
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className={`p-2 rounded-xl transition-all ${
+                  isDarkMode 
+                    ? 'bg-white/10 text-white hover:bg-white/20' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile Navigation */}
+          {isMenuOpen && (
+            <div className={`md:hidden py-4 border-t ${
+              isDarkMode ? 'border-white/10' : 'border-gray-200'
+            }`}>
+              <div className="flex flex-col space-y-3">
+                <a href="#features" className={`hover:text-purple-400 transition-colors ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>
+                  Features
+                </a>
+                <a href="#about" className={`hover:text-purple-400 transition-colors ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>
+                  About
+                </a>
+                <a href="#contact" className={`hover:text-purple-400 transition-colors ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>
+                  Contact
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+          <div className="text-center">
+            {/* Floating elements */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className={`absolute top-20 left-10 w-20 h-20 rounded-full opacity-20 animate-pulse ${
+                isDarkMode ? 'bg-purple-500' : 'bg-blue-500'
+              }`}></div>
+              <div className={`absolute top-40 right-20 w-16 h-16 rounded-full opacity-30 animate-bounce ${
+                isDarkMode ? 'bg-pink-500' : 'bg-purple-500'
+              }`}></div>
+              <div className={`absolute bottom-20 left-1/4 w-12 h-12 rounded-full opacity-25 animate-ping ${
+                isDarkMode ? 'bg-blue-500' : 'bg-pink-500'
+              }`}></div>
+            </div>
+
+            <div className="relative z-10">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+                  Beautiful
+                </span>
+                <br />
+                <span className={isDarkMode ? 'text-white' : 'text-gray-900'}>
+                  Modern Web
+                </span>
+              </h1>
+              
+              <p className={`text-xl sm:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`}>
+                Experience the future of web applications with our cutting-edge platform. 
+                Built for performance, designed for beauty.
+              </p>
+
+              <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+                <button className="group px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-2xl font-semibold text-white transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2">
+                  <span>Get Started</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+                
+                <button className={`px-8 py-4 rounded-2xl font-semibold transition-all transform hover:scale-105 border-2 ${
+                  isDarkMode 
+                    ? 'border-white/20 text-white hover:bg-white/10' 
+                    : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+                }`}>
+                  Learn More
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      )}
+      </section>
 
-      <main className="flex-1 p-4 max-w-7xl mx-auto">
-        {/* Mobile Layout */}
-        <div className="block lg:hidden space-y-4 h-[calc(100vh-200px)]">
-          {/* Chess Board - Top priority on mobile */}
-          <div className="flex justify-center">
-            {playerColor ? (
-              <ChessBoard
-                game={game}
-                playerColor={playerColor}
-                onMove={makeMove}
-                isPlayerTurn={isPlayerTurn}
-                lastMove={lastMove}
-              />
-            ) : (
-              <div className="w-80 h-80 bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg flex items-center justify-center border-4 border-amber-900">
-                <div className="text-center text-amber-900">
-                  <Crown className="w-16 h-16 mx-auto mb-4" />
-                  <p className="font-semibold">Waiting for game...</p>
+      {/* Stats Section */}
+      <section className={`py-16 ${
+        isDarkMode 
+          ? 'bg-black/20 backdrop-blur-sm' 
+          : 'bg-white/50 backdrop-blur-sm'
+      }`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                  {stat.number}
+                </div>
+                <div className={`text-sm lg:text-base ${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  {stat.label}
                 </div>
               </div>
-            )}
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-5xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Amazing Features
+              </span>
+            </h2>
+            <p className={`text-xl max-w-3xl mx-auto ${
+              isDarkMode ? 'text-gray-300' : 'text-gray-600'
+            }`}>
+              Discover what makes our platform special and why thousands of users choose us every day.
+            </p>
           </div>
 
-          {/* Video Section - Smaller on mobile */}
-          <div className="grid grid-cols-2 gap-2 h-32">
-            {/* Remote Video */}
-            <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl overflow-hidden border border-white/10">
-              {isVideoConnected ? (
-                <video
-                  ref={remoteVideoRef}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  playsInline
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <Video className="w-8 h-8 text-gray-600" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className={`group p-6 rounded-2xl transition-all duration-300 hover:scale-105 cursor-pointer ${
+                  isDarkMode 
+                    ? 'bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10' 
+                    : 'bg-white/70 backdrop-blur-sm border border-gray-200/50 hover:bg-white shadow-lg hover:shadow-xl'
+                }`}
+              >
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all group-hover:scale-110 ${
+                  isDarkMode 
+                    ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-400' 
+                    : 'bg-gradient-to-r from-purple-500/10 to-pink-500/10 text-purple-600'
+                }`}>
+                  {feature.icon}
                 </div>
-              )}
-              <div className="absolute top-1 left-1 bg-black/50 backdrop-blur-sm rounded px-1 text-xs">
-                Opponent
-              </div>
-            </div>
-
-            {/* Local Video */}
-            <div className="relative bg-gray-800 rounded-xl overflow-hidden border border-white/10">
-              <video
-                ref={localVideoRef}
-                className="w-full h-full object-cover"
-                autoPlay
-                playsInline
-                muted
-              />
-              <div className="absolute top-1 left-1 bg-black/50 backdrop-blur-sm rounded px-1 text-xs">
-                You
-              </div>
-              {!isCameraOn && (
-                <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-                  <VideoOff className="w-8 h-8 text-gray-500" />
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Game Status */}
-          {playerColor && (
-            <GameStatus
-              game={game}
-              playerColor={playerColor}
-              isPlayerTurn={isPlayerTurn}
-              opponentName="Opponent"
-            />
-          )}
-
-          {/* Mobile Controls */}
-          <div className="flex items-center justify-center">
-            {!isVideoConnected && !isGameActive && !isSearching ? (
-              <div className="text-center space-y-3 w-full">
-                <button
-                  onClick={handleStartGame}
-                  className="w-full px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg text-white"
-                >
-                  Start Chess Game
-                </button>
-                <p className="text-xs text-gray-400">
-                  Play chess with random people worldwide
+                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+                <p className={`${
+                  isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  {feature.description}
                 </p>
               </div>
-            ) : (
-              <div className="flex items-center justify-center space-x-2 w-full flex-wrap gap-2">
-                <button
-                  onClick={handleToggleCamera}
-                  className={`p-2 rounded-xl border transition-all text-white ${
-                    isCameraOn 
-                      ? 'bg-gray-700/80 border-gray-600/50 hover:bg-gray-600/80' 
-                      : 'bg-red-600/80 border-red-500/50 hover:bg-red-500/80'
-                  }`}
-                >
-                  {isCameraOn ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
-                </button>
-
-                <button
-                  onClick={handleToggleMic}
-                  className={`p-2 rounded-xl border transition-all text-white ${
-                    isMicOn 
-                      ? 'bg-gray-700/80 border-gray-600/50 hover:bg-gray-600/80' 
-                      : 'bg-red-600/80 border-red-500/50 hover:bg-red-500/80'
-                  }`}
-                >
-                  {isMicOn ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
-                </button>
-
-                <button
-                  onClick={() => setShowChat(!showChat)}
-                  className="p-2 rounded-xl bg-blue-600/80 border border-blue-500/50 hover:bg-blue-500/80 transition-all text-white"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                </button>
-
-                {isGameActive && (
-                  <>
-                    <button
-                      onClick={resign}
-                      className="p-2 rounded-xl bg-red-600/80 border border-red-500/50 hover:bg-red-500/80 transition-all text-white"
-                      title="Resign"
-                    >
-                      <Flag className="w-4 h-4" />
-                    </button>
-
-                    <button
-                      onClick={offerDraw}
-                      className="p-2 rounded-xl bg-yellow-600/80 border border-yellow-500/50 hover:bg-yellow-500/80 transition-all text-white"
-                      title="Offer Draw"
-                    >
-                      <Handshake className="w-4 h-4" />
-                    </button>
-                  </>
-                )}
-
-                <button
-                  onClick={handleNewGame}
-                  className="p-2 rounded-xl bg-purple-600/80 border border-purple-500/50 hover:bg-purple-500/80 transition-all text-white"
-                  title="New Game"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                </button>
-
-                <button
-                  onClick={disconnectVideo}
-                  className="p-2 rounded-xl bg-gray-600/80 border border-gray-500/50 hover:bg-gray-500/80 transition-all text-white"
-                >
-                  <Power className="w-4 h-4" />
-                </button>
-              </div>
-            )}
+            ))}
           </div>
-
-          {/* Mobile Chat - Full screen overlay */}
-          {showChat && (
-            <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex flex-col">
-              <div className="bg-gradient-to-r from-blue-900/30 via-purple-900/20 to-gray-900/40 backdrop-blur-sm border-b border-blue-500/20 p-4 flex items-center justify-between">
-                <h3 className="font-semibold text-blue-100">Chat</h3>
-                <button
-                  onClick={() => setShowChat(false)}
-                  className="p-2 hover:bg-white/10 rounded text-blue-200"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* Messages */}
-              <div className="flex-1 p-4 overflow-y-auto space-y-3">
-                {messages.length === 0 ? (
-                  <div className="text-center text-blue-200/70 py-8">
-                    <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>Start chatting when connected!</p>
-                  </div>
-                ) : (
-                  messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`max-w-[80%] ${
-                        message.sender === 'you' ? 'ml-auto' : 'mr-auto'
-                      }`}
-                    >
-                      <div
-                        className={`p-3 rounded-2xl ${
-                          message.sender === 'you'
-                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white ml-auto shadow-lg'
-                            : 'bg-gradient-to-r from-gray-700/80 to-gray-600/80 text-gray-100 backdrop-blur-sm border border-white/10'
-                        }`}
-                      >
-                        <p className="text-sm">{message.text}</p>
-                      </div>
-                      <p className="text-xs text-blue-200/60 mt-1 px-1">
-                        {message.timestamp.toLocaleTimeString([], { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}
-                      </p>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {/* Message Input */}
-              <div className="p-4 border-t border-blue-500/20 bg-gradient-to-r from-blue-500/5 to-purple-500/5">
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={messageInput}
-                    onChange={(e) => setMessageInput(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder={isVideoConnected ? "Type a message..." : "Connect to chat"}
-                    disabled={!isVideoConnected}
-                    className="flex-1 bg-gray-800/50 border border-blue-500/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 text-white placeholder-blue-200/50 backdrop-blur-sm"
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!isVideoConnected || !messageInput.trim()}
-                    className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 rounded-xl transition-all shadow-lg"
-                  >
-                    <Send className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
+      </section>
 
-        {/* Desktop Layout */}
-        <div className={`hidden lg:grid ${showChat ? 'grid-cols-4' : 'grid-cols-3'} gap-6 h-[calc(100vh-160px)]`}>
-          {/* Chess Board Section */}
-          <div className="flex flex-col items-center justify-center space-y-4">
-            {playerColor ? (
-              <>
-                <ChessBoard
-                  game={game}
-                  playerColor={playerColor}
-                  onMove={makeMove}
-                  isPlayerTurn={isPlayerTurn}
-                  lastMove={lastMove}
-                />
-                
-                {/* Game Controls */}
-                <div className="flex items-center space-x-3">
-                  {isGameActive && (
-                    <>
-                      <button
-                        onClick={resign}
-                        className="px-4 py-2 bg-red-600/80 border border-red-500/50 hover:bg-red-500/80 rounded-xl transition-all text-white flex items-center space-x-2"
-                      >
-                        <Flag className="w-4 h-4" />
-                        <span>Resign</span>
-                      </button>
-
-                      <button
-                        onClick={offerDraw}
-                        className="px-4 py-2 bg-yellow-600/80 border border-yellow-500/50 hover:bg-yellow-500/80 rounded-xl transition-all text-white flex items-center space-x-2"
-                      >
-                        <Handshake className="w-4 h-4" />
-                        <span>Draw</span>
-                      </button>
-                    </>
-                  )}
-
-                  <button
-                    onClick={handleNewGame}
-                    className="px-4 py-2 bg-purple-600/80 border border-purple-500/50 hover:bg-purple-500/80 rounded-xl transition-all text-white flex items-center space-x-2"
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                    <span>New Game</span>
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="text-center space-y-4">
-                {!isVideoConnected && !isGameActive && !isSearching ? (
-                  <>
-                    <div className="w-96 h-96 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center border-4 border-amber-900 shadow-2xl">
-                      <div className="text-center text-amber-900">
-                        <Crown className="w-20 h-20 mx-auto mb-4" />
-                        <p className="text-xl font-bold">Chess With Strangers</p>
-                        <p className="text-sm mt-2">Play chess while video chatting</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={handleStartGame}
-                      className="px-8 py-3 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg text-lg text-white"
-                    >
-                      Start Chess Game
-                    </button>
-                  </>
-                ) : (
-                  <div className="w-96 h-96 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center border-4 border-amber-900 shadow-2xl">
-                    <div className="text-center text-amber-900">
-                      <div className="w-12 h-12 mx-auto border-4 border-amber-700/30 border-t-amber-700 rounded-full animate-spin mb-4"></div>
-                      <p className="text-lg font-semibold">Finding opponent...</p>
-                      <p className="text-sm mt-2">Setting up your chess game</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Video Section */}
-          <div className="space-y-6">
-            {/* Video Grid */}
-            <div className="grid grid-cols-1 gap-4 h-4/5">
-              {/* Remote Video */}
-              <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden border border-white/10">
-                {isVideoConnected ? (
-                  <video
-                    ref={remoteVideoRef}
-                    className="w-full h-full object-cover"
-                    autoPlay
-                    playsInline
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <div className="text-center space-y-4">
-                      {isSearching ? (
-                        <>
-                          <div className="w-12 h-12 mx-auto border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
-                          <p className="text-lg font-medium">Connecting...</p>
-                        </>
-                      ) : (
-                        <>
-                          <Video className="w-16 h-16 mx-auto text-gray-600" />
-                          <p className="text-lg font-medium text-gray-300">Opponent</p>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-                
-                <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-sm rounded-lg px-3 py-1 text-sm">
-                  Opponent
-                </div>
-              </div>
-
-              {/* Local Video */}
-              <div className="relative bg-gray-800 rounded-2xl overflow-hidden border border-white/10">
-                <video
-                  ref={localVideoRef}
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  playsInline
-                  muted
-                />
-                <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-sm rounded-lg px-3 py-1 text-sm">
-                  You
-                </div>
-                
-                {!isCameraOn && (
-                  <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
-                    <VideoOff className="w-16 h-16 text-gray-500" />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Video Controls */}
-            <div className="h-1/5 flex items-center justify-center space-x-4">
-              <button
-                onClick={handleToggleCamera}
-                className={`p-3 rounded-2xl border transition-all text-white ${
-                  isCameraOn 
-                    ? 'bg-gray-700/80 border-gray-600/50 hover:bg-gray-600/80' 
-                    : 'bg-red-600/80 border-red-500/50 hover:bg-red-500/80'
-                }`}
-              >
-                {isCameraOn ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
-              </button>
-
-              <button
-                onClick={handleToggleMic}
-                className={`p-3 rounded-2xl border transition-all text-white ${
-                  isMicOn 
-                    ? 'bg-gray-700/80 border-gray-600/50 hover:bg-gray-600/80' 
-                    : 'bg-red-600/80 border-red-500/50 hover:bg-red-500/80'
-                }`}
-              >
-                {isMicOn ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
-              </button>
-
-              <button
-                onClick={() => setShowChat(!showChat)}
-                className="p-3 rounded-2xl bg-blue-600/80 border border-blue-500/50 hover:bg-blue-500/80 transition-all lg:hidden text-white"
-              >
-                <MessageCircle className="w-5 h-5" />
-              </button>
-
-              <button
-                onClick={disconnectVideo}
-                className="p-3 rounded-2xl bg-gray-600/80 border border-gray-500/50 hover:bg-gray-500/80 transition-all text-white"
-              >
-                <Power className="w-5 h-5" />
-              </button>
+      {/* CTA Section */}
+      <section className={`py-20 ${
+        isDarkMode 
+          ? 'bg-gradient-to-r from-purple-900/50 to-pink-900/50' 
+          : 'bg-gradient-to-r from-purple-100/50 to-pink-100/50'
+      }`}>
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl lg:text-5xl font-bold mb-6">
+            Ready to get started?
+          </h2>
+          <p className={`text-xl mb-8 ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+          }`}>
+            Join thousands of satisfied users and experience the difference today.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
+            <button className="group px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-2xl font-semibold text-white transition-all transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2">
+              <Rocket className="w-5 h-5" />
+              <span>Start Free Trial</span>
+            </button>
+            
+            <div className="flex items-center space-x-2 text-sm">
+              <Check className="w-4 h-4 text-green-400" />
+              <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                No credit card required
+              </span>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Game Status */}
-          {playerColor && (
-            <GameStatus
-              game={game}
-              playerColor={playerColor}
-              isPlayerTurn={isPlayerTurn}
-              opponentName="Opponent"
-            />
-          )}
-
-          {/* Desktop Chat Section */}
-          {showChat && (
-            <div className="bg-gradient-to-br from-blue-900/30 via-purple-900/20 to-gray-900/40 backdrop-blur-sm rounded-2xl border border-blue-500/20 flex flex-col shadow-xl">
-              <div className="p-4 border-b border-blue-500/20 flex items-center justify-between bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-t-2xl">
-                <h3 className="font-semibold text-blue-100">Chat</h3>
+      {/* Footer */}
+      <footer className={`py-12 border-t ${
+        isDarkMode 
+          ? 'bg-black/20 border-white/10' 
+          : 'bg-white/50 border-gray-200'
+      }`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="flex items-center space-x-2 mb-4 md:mb-0">
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                isDarkMode 
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500' 
+                  : 'bg-gradient-to-r from-blue-500 to-purple-500'
+              }`}>
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
-
-              {/* Messages */}
-              <div className="flex-1 p-4 overflow-y-auto space-y-3">
-                {messages.length === 0 ? (
-                  <div className="text-center text-blue-200/70 py-8">
-                    <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p>Start chatting when connected!</p>
-                  </div>
-                ) : (
-                  messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`max-w-[80%] ${
-                        message.sender === 'you' ? 'ml-auto' : 'mr-auto'
-                      }`}
-                    >
-                      <div
-                        className={`p-3 rounded-2xl ${
-                          message.sender === 'you'
-                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white ml-auto shadow-lg'
-                            : 'bg-gradient-to-r from-gray-700/80 to-gray-600/80 text-gray-100 backdrop-blur-sm border border-white/10'
-                        }`}
-                      >
-                        <p className="text-sm">{message.text}</p>
-                      </div>
-                      <p className="text-xs text-blue-200/60 mt-1 px-1">
-                        {message.timestamp.toLocaleTimeString([], { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}
-                      </p>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {/* Message Input */}
-              <div className="p-4 border-t border-blue-500/20 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-b-2xl">
-                <div className="flex space-x-2">
-                  <input
-                    type="text"
-                    value={messageInput}
-                    onChange={(e) => setMessageInput(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder={isVideoConnected ? "Type a message..." : "Connect to chat"}
-                    disabled={!isVideoConnected}
-                    className="flex-1 bg-gray-800/50 border border-blue-500/30 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 text-white placeholder-blue-200/50 backdrop-blur-sm"
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!isVideoConnected || !messageInput.trim()}
-                    className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 rounded-xl transition-all shadow-lg"
-                  >
-                    <Send className="w-4 h-4" />
-                  </button>
-                </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                ModernApp
+              </span>
+            </div>
+            
+            <div className={`flex items-center space-x-6 text-sm ${
+              isDarkMode ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              <span>© 2025 ModernApp. All rights reserved.</span>
+              <div className="flex items-center space-x-1">
+                <span>Made with</span>
+                <Heart className="w-4 h-4 text-red-400" />
+                <span>and React</span>
               </div>
             </div>
-          )}
+          </div>
         </div>
-
-        {/* Instructions */}
-        <div className="mt-6 text-center text-gray-400 text-xs sm:text-sm">
-          <p>Play chess with random people while video chatting • Be respectful and have fun!</p>
-          {!isVideoConnected && !isGameActive && !isSearching && (
-            <p className="mt-2 text-xs">
-              Real chess game with video chat powered by WebRTC • Your privacy is protected
-            </p>
-          )}
-        </div>
-      </main>
+      </footer>
     </div>
   );
 }
