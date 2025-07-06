@@ -40,15 +40,19 @@ const io = socketIo(server, {
 
 // Almacenar usuarios esperando conexión
 const waitingUsers = new Set();
+const chessWaitingUsers = new Set();
 const activeConnections = new Map();
+const chessGames = new Map();
 
 // Ruta principal con información del servidor
 app.get('/', (req, res) => {
   res.json({ 
     status: 'TVO Signaling Server Running ✅',
-    message: 'WebRTC Video Chat Server',
+    message: 'WebRTC Video Chat & Chess Server',
     users: waitingUsers.size,
+    chessUsers: chessWaitingUsers.size,
     connections: activeConnections.size,
+    chessGames: chessGames.size,
     timestamp: new Date().toISOString(),
     version: '1.0.0',
     uptime: Math.floor(process.uptime()),
@@ -74,7 +78,9 @@ app.get('/health', (req, res) => {
 app.get('/stats', (req, res) => {
   res.json({
     waitingUsers: waitingUsers.size,
+    chessWaitingUsers: chessWaitingUsers.size,
     activeConnections: activeConnections.size,
+    chessGames: chessGames.size,
     connectedSockets: io.engine.clientsCount,
     uptime: Math.floor(process.uptime()),
     timestamp: new Date().toISOString()
@@ -154,11 +160,128 @@ io.on('connection', (socket) => {
     waitingUsers.add(socket);
   });
 
+  // Chess game events
+  socket.on('find-chess-game', () => {
+    console.log(`🔍 User ${socket.id} looking for chess game`);
+    
+    // Si hay alguien esperando, hacer match
+    if (chessWaitingUsers.size > 0) {
+      const waitingUser = chessWaitingUsers.values().next().value;
+      
+      if (waitingUser && waitingUser.id !== socket.id) {
+        chessWaitingUsers.delete(waitingUser);
+        
+        // Crear juego de ajedrez
+        const gameId = `chess_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const whitePlayer = Math.random() < 0.5 ? socket : waitingUser;
+        const blackPlayer = whitePlayer === socket ? waitingUser : socket;
+        
+        chessGames.set(gameId, {
+          white: whitePlayer.id,
+          black: blackPlayer.id,
+          fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+          moves: [],
+          status: 'active'
+        });
+        
+        // Notificar a ambos jugadores
+        whitePlayer.emit('game-start', { 
+          gameId, 
+          color: 'white', 
+          opponentId: blackPlayer.id 
+        });
+        blackPlayer.emit('game-start', { 
+          gameId, 
+          color: 'black', 
+          opponentId: whitePlayer.id 
+        });
+        
+        console.log(`♟️ Chess game created: ${gameId} | White: ${whitePlayer.id} | Black: ${blackPlayer.id}`);
+      } else {
+        chessWaitingUsers.add(socket);
+        console.log(`⏳ User added to chess waiting list: ${socket.id}`);
+      }
+    } else {
+      // Agregar a la lista de espera
+      chessWaitingUsers.add(socket);
+      console.log(`⏳ User added to chess waiting list: ${socket.id}`);
+    }
+  });
+
+  socket.on('make-move', ({ gameId, from, to, promotion, fen }) => {
+    const game = chessGames.get(gameId);
+    if (!game) {
+      socket.emit('error', { message: 'Game not found' });
+      return;
+    }
+    
+    // Verificar que es el turno del jugador
+    const isWhiteTurn = fen.includes(' w ');
+    const isPlayerWhite = game.white === socket.id;
+    
+    if ((isWhiteTurn && !isPlayerWhite) || (!isWhiteTurn && isPlayerWhite)) {
+      socket.emit('error', { message: 'Not your turn' });
+      return;
+    }
+    
+    // Actualizar el juego
+    game.fen = fen;
+    game.moves.push({ from, to, promotion, timestamp: Date.now() });
+    
+    // Notificar al oponente
+    const opponentId = isPlayerWhite ? game.black : game.white;
+    const opponentSocket = [...io.sockets.sockets.values()]
+      .find(s => s.id === opponentId);
+    
+    if (opponentSocket) {
+      opponentSocket.emit('move-made', { from, to, promotion, fen });
+    }
+    
+    console.log(`♟️ Move made in game ${gameId}: ${from} -> ${to}`);
+  });
+
+  socket.on('resign', ({ gameId }) => {
+    const game = chessGames.get(gameId);
+    if (!game) return;
+    
+    const isPlayerWhite = game.white === socket.id;
+    const opponentId = isPlayerWhite ? game.black : game.white;
+    const opponentSocket = [...io.sockets.sockets.values()]
+      .find(s => s.id === opponentId);
+    
+    // Notificar resultado
+    socket.emit('game-end', { result: 'loss', reason: 'You resigned' });
+    if (opponentSocket) {
+      opponentSocket.emit('game-end', { result: 'win', reason: 'Opponent resigned' });
+    }
+    
+    // Limpiar juego
+    chessGames.delete(gameId);
+    console.log(`♟️ Game ${gameId} ended by resignation`);
+  });
+
+  socket.on('offer-draw', ({ gameId }) => {
+    const game = chessGames.get(gameId);
+    if (!game) return;
+    
+    const isPlayerWhite = game.white === socket.id;
+    const opponentId = isPlayerWhite ? game.black : game.white;
+    const opponentSocket = [...io.sockets.sockets.values()]
+      .find(s => s.id === opponentId);
+    
+    if (opponentSocket) {
+      opponentSocket.emit('draw-offered', { from: socket.id });
+    }
+    
+    console.log(`♟️ Draw offered in game ${gameId}`);
+  });
+
   socket.on('disconnect', () => {
     console.log(`❌ User disconnected: ${socket.id} | Remaining: ${io.engine.clientsCount - 1}`);
     
     // Remover de lista de espera
     waitingUsers.delete(socket);
+    chessWaitingUsers.delete(socket);
     
     // Notificar al partner si existe
     const partnerId = activeConnections.get(socket.id);
@@ -172,6 +295,22 @@ io.on('connection', (socket) => {
       
       activeConnections.delete(socket.id);
       activeConnections.delete(partnerId);
+    }
+    
+    // Limpiar juegos de ajedrez
+    for (const [gameId, game] of chessGames.entries()) {
+      if (game.white === socket.id || game.black === socket.id) {
+        const opponentId = game.white === socket.id ? game.black : game.white;
+        const opponentSocket = [...io.sockets.sockets.values()]
+          .find(s => s.id === opponentId);
+        
+        if (opponentSocket) {
+          opponentSocket.emit('opponent-disconnected');
+        }
+        
+        chessGames.delete(gameId);
+        console.log(`♟️ Game ${gameId} ended due to disconnection`);
+      }
     }
   });
 });
@@ -197,7 +336,7 @@ setInterval(() => {
 
 // Estadísticas cada 10 minutos
 setInterval(() => {
-  console.log(`📊 Server Stats - Connected: ${io.engine.clientsCount} | Waiting: ${waitingUsers.size} | Active: ${activeConnections.size}`);
+  console.log(`📊 Server Stats - Connected: ${io.engine.clientsCount} | Video Waiting: ${waitingUsers.size} | Chess Waiting: ${chessWaitingUsers.size} | Video Active: ${activeConnections.size} | Chess Games: ${chessGames.size}`);
 }, 10 * 60 * 1000);
 
 const PORT = process.env.PORT || 3001;

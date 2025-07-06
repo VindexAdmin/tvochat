@@ -1,21 +1,24 @@
-# TVO - Video Chat Gratuito
+# Chess With Strangers - Video Chess Game
 
-Aplicación de videochat en tiempo real que conecta personas aleatoriamente usando WebRTC.
+Aplicación de ajedrez en tiempo real con videochat que conecta jugadores aleatoriamente usando WebRTC.
 
 ## 🚀 Características
 
-- ✅ **Videollamadas reales** con WebRTC P2P
-- ✅ **Chat en tiempo real** durante las llamadas
+- ✅ **Juego de ajedrez completo** con todas las reglas oficiales
+- ✅ **Videollamadas reales** con WebRTC P2P durante el juego
+- ✅ **Chat en tiempo real** mientras juegas
+- ✅ **Emparejamiento automático** con jugadores aleatorios
 - ✅ **Completamente gratuito** - sin costos de servidor
 - ✅ **Privacidad protegida** - conexiones directas P2P
 - ✅ **Responsive design** - funciona en móvil y desktop
-- ✅ **Controles completos** - cámara, micrófono, siguiente usuario
+- ✅ **Controles completos** - rendirse, ofrecer tablas, nuevo juego
 
 ## 🛠️ Tecnologías
 
 ### Frontend
 - **React 18** con TypeScript
 - **Tailwind CSS** para estilos
+- **Chess.js** para lógica del ajedrez
 - **PeerJS** para WebRTC
 - **Socket.io Client** para señalización
 - **Vite** como bundler
@@ -37,7 +40,7 @@ Aplicación de videochat en tiempo real que conecta personas aleatoriamente usan
 ### 1. Clonar el repositorio
 ```bash
 git clone <tu-repo>
-cd tvo-video-chat
+cd chess-with-strangers
 ```
 
 ### 2. Instalar dependencias del frontend
@@ -63,7 +66,7 @@ npm start
 ```
 
 ### 4. Actualizar la URL del servidor
-En `src/services/WebRTCService.ts`, cambia:
+En `src/services/WebRTCService.ts` y `src/services/ChessGameService.ts`, cambia:
 ```typescript
 private readonly SIGNALING_SERVER = 'https://tu-app.onrender.com';
 ```
@@ -98,18 +101,31 @@ Actualiza las URLs permitidas en `server/server.js`:
 origin: ["http://localhost:5173", "https://tu-app.netlify.app"]
 ```
 
-## 🚀 Características Técnicas
+## 🚀 Características del Juego
 
-- **WebRTC P2P**: Conexiones directas entre usuarios
-- **Fallback TURN**: Para usuarios detrás de NAT estricto  
-- **Reconexión automática**: Si se pierde la conexión
-- **Limpieza de recursos**: Gestión automática de memoria
-- **Error handling**: Manejo robusto de errores
+### Ajedrez
+- **Reglas completas**: Movimientos legales, enroque, captura al paso, promoción
+- **Detección de jaque y jaque mate**
+- **Detección de tablas**: Ahogado, repetición, material insuficiente
+- **Interfaz visual**: Tablero interactivo con coordenadas
+- **Indicadores visuales**: Movimientos posibles, último movimiento
+
+### Video Chat
+- **WebRTC P2P**: Conexiones directas entre jugadores
+- **Controles de cámara y micrófono**
+- **Chat de texto** durante la partida
+- **Reconexión automática** si se pierde la conexión
+
+### Funcionalidades del Juego
+- **Rendirse**: Terminar la partida inmediatamente
+- **Ofrecer tablas**: Proponer empate al oponente
+- **Nuevo juego**: Buscar otro oponente
+- **Estado del juego**: Información en tiempo real
 
 ## 🔒 Privacidad y Seguridad
 
 - Las videollamadas son **P2P directas**
-- No se almacenan videos ni mensajes
+- No se almacenan videos, mensajes ni partidas
 - Conexiones encriptadas con WebRTC
 - Sin registro de usuarios requerido
 
@@ -131,9 +147,9 @@ origin: ["http://localhost:5173", "https://tu-app.netlify.app"]
 - Verifica que el servidor de señalización esté funcionando
 - Revisa la consola del navegador para errores
 
-### "No users found"
-- Es normal si no hay otros usuarios conectados
-- Prueba con otra pestaña/dispositivo
+### "Game not found"
+- Es normal si el oponente se desconecta
+- Prueba iniciando un nuevo juego
 
 ## 📄 Licencia
 
@@ -149,4 +165,4 @@ MIT License - Uso libre para proyectos personales y comerciales.
 
 ---
 
-**¡Disfruta conectando con personas de todo el mundo! 🌍**
+**¡Disfruta jugando ajedrez con personas de todo el mundo! ♟️**
