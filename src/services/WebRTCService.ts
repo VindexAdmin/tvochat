@@ -20,7 +20,7 @@ export class WebRTCService {
   private isSearching = false;
   private partnerId: string | null = null;
 
-  private readonly SIGNALING_SERVER = import.meta.env.VITE_SIGNALING_SERVER || 'http://localhost:3001';
+  private readonly SIGNALING_SERVER = 'http://localhost:3001';
   
   constructor(events: WebRTCEvents) {
     this.events = events;
